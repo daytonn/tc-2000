@@ -61,12 +61,16 @@ a:active {
   z-index: 1;
 }
 
-.status-indicator.connected .icon {
-  fill: var(--blue);
-}
-
 .status-indicator.configuring .icon {
   fill: #ff0080;
+}
+
+.status-indicator.connecting .icon {
+  fill: var(--yellow);
+}
+
+.status-indicator.ready .icon {
+  fill: var(--blue);
 }
 
 .status-indicator.running .icon {
