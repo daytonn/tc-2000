@@ -1,2 +1,0 @@
-/media/daytonn/Shire/Development/tc-2000/build/CMakeFiles/edit_cache.dir
-/media/daytonn/Shire/Development/tc-2000/build/CMakeFiles/rebuild_cache.dir
