@@ -1,0 +1,364 @@
+:root {
+  --aqua: #7fdbff;
+  --black: #111111;
+  --blue: #0074d9;
+  --fuchsia: #f012be;
+  --gray: #aaaaaa;
+  --green: #2ecc40;
+  --lime: #01ff70;
+  --maroon: #85144b;
+  --navy: #001f3f;
+  --olive: #3d9970;
+  --orange: #ff851b;
+  --purple: #b10dc9;
+  --red: #ff4136;
+  --silver: #dddddd;
+  --teal: #39cccc;
+  --white: #ffffff;
+  --yellow: #ffdc00;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+a:link {
+  color: var(--blue);
+}
+
+a:visited {
+  color: darken(var(--blue), 20%);
+}
+
+a:hover {
+  color: lighten(var(--blue), 20%);
+}
+
+a:active {
+  color: lighten(var(--blue), 25%);
+}
+
+.icon {
+  margin: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.status-indicator {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0.25rem;
+  top: 0.25rem;
+  border-radius: 100%;
+  width: 48px;
+  height: 48px;
+  background-color: #343434;
+  z-index: 1;
+}
+
+.status-indicator.connected .icon {
+  fill: var(--blue);
+}
+
+.status-indicator.configuring .icon {
+  fill: #ff0080;
+}
+
+.status-indicator.running .icon {
+  fill: var(--green);
+}
+
+.status-indicator.offline .icon {
+  fill: var(--red);
+}
+
+.status-indicator.random0 .icon {
+  fill: var(--aqua);
+}
+
+.status-indicator.random1 .icon {
+  fill: var(--blue);
+}
+
+.status-indicator.random2 .icon {
+  fill: var(--fuschia);
+}
+
+.status-indicator.random3 .icon {
+  fill: var(--lime);
+}
+
+.status-indicator.random4 .icon {
+  fill: var(--orange);
+}
+
+.status-indicator.random5 .icon {
+  fill: var(--purple);
+}
+
+.status-indicator.random6 .icon {
+  fill: var(--yellow);
+}
+
+.status-indicator.random7 .icon {
+  fill: var(--olive);
+}
+
+.status-indicator.random8 .icon {
+  fill: var(--teal);
+}
+
+.status-indicator.random9 .icon {
+  fill: var(--maroon);
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--blue);
+  color: var(--white);
+  padding: 1rem 1.5rem;
+  border: none;
+  min-width: 250px;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+
+button .icon {
+  margin-right: 0.5rem;
+  filter: invert(100%) brightness(100%);
+  width: 1rem;
+  height: 1rem;
+}
+
+body {
+  font-size: 16px;
+  padding: 0;
+  margin: 0;
+}
+
+.menu.open {
+}
+
+.menu nav {
+  display: none;
+  margin-top: 52px;
+  z-index: 2;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu .menu-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  min-width: 0;
+  align-self: flex-end;
+  margin-bottom: 1rem;
+  z-index: 999;
+}
+
+.menu-toggle .icon {
+  margin: 0;
+}
+
+.menu ul {
+  z-index: 3;
+  list-style-type: none;
+  list-style-position: inside;
+  padding: 0;
+  width: 90%;
+  margin: 0;
+}
+
+.menu .menu-toggle img:last-child {
+  display: none;
+}
+
+.menu.open .menu-toggle img:last-child {
+  display: block;
+}
+
+.menu.open .menu-toggle img:first-child {
+  display: none;
+}
+
+.menu.open nav {
+  background-color: var(--white);
+  display: flex;
+}
+
+.menu li {
+  display: block;
+  width: 100%;
+  margin: 0 0 1rem 0;
+}
+
+.menu li button {
+  width: 100%;
+}
+
+.poker-table {
+  position: relative;
+  width: 375px;
+  height: 653px;
+  background-image: url("/images/poker-table.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  color: var(--white);
+  font-family: sans-serif;
+}
+
+.poker-table p {
+  color: var(--white);
+  text-align: center;
+  margin-top: 15rem;
+}
+
+.arcade-button {
+  display: block;
+  position: absolute;
+  min-width: 0;
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #888;
+  border: solid 4px #333;
+  z-index: 2;
+}
+
+.arcade-button.selected {
+  background-color: #fff;
+  border-color: var(--green);
+}
+
+.arcade-button[player="0"] {
+  left: 282px;
+  top: 298px;
+}
+
+.arcade-button[player="1"] {
+  left: 282px;
+  top: 411px;
+}
+
+.arcade-button[player="2"] {
+  left: 260px;
+  top: 517px;
+}
+
+.arcade-button[player="3"] {
+  left: 68px;
+  top: 517px;
+}
+
+.arcade-button[player="4"] {
+  left: 36px;
+  top: 411px;
+}
+
+.arcade-button[player="5"] {
+  left: 36px;
+  top: 298px;
+}
+
+.arcade-button[player="6"] {
+  left: 36px;
+  top: 186px;
+}
+
+.arcade-button[player="7"] {
+  left: 68px;
+  top: 85px;
+}
+
+.arcade-button[player="8"] {
+  left: 260px;
+  top: 85px;
+}
+
+.arcade-button[player="9"] {
+  left: 282px;
+  top: 186px;
+}
+
+.colored-buttons .arcade-button[player="0"] {
+  border-color: var(--red);
+}
+
+.colored-buttons .arcade-button[player="1"] {
+  border-color: var(--orange);
+}
+
+.colored-buttons .arcade-button[player="2"] {
+  border-color: var(--yellow);
+}
+
+.colored-buttons .arcade-button[player="3"] {
+  border-color: var(--green);
+}
+
+.colored-buttons .arcade-button[player="4"] {
+  border-color: var(--blue);
+}
+
+.colored-buttons .arcade-button[player="5"] {
+  border-color: var(--purple);
+}
+
+.colored-buttons .arcade-button[player="6"] {
+  border-color: var(--olive);
+}
+
+.colored-buttons .arcade-button[player="7"] {
+  border-color: var(--teal);
+}
+
+.colored-buttons .arcade-button[player="8"] {
+  border-color: var(--fuchsia);
+}
+
+.colored-buttons .arcade-button[player="9"] {
+  border-color: var(--maroon);
+}
+
+.arcade-button span {
+  color: var(--black);
+}
+
+.action-button {
+  position: absolute;
+  left: 86px;
+  width: 200px;
+  min-width: 200px;
+  display: none;
+}
+
+.action-button.visible {
+  display: block;
+  font-weight: 800;
+}
+
+.action-button:first-child {
+  top: 242px;
+}
+
+.action-button:nth-child(2) {
+  top: 342px;
+}
+
+.action-button:nth-child(4) {
+  top: 410px;
+}
