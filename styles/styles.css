@@ -77,6 +77,10 @@ a:active {
   fill: var(--red);
 }
 
+.status-indicator.interactive .icon {
+  fill: var(--white);
+}
+
 .status-indicator.random0 .icon {
   fill: var(--aqua);
 }
@@ -131,6 +135,18 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  background-color: lighten(var(--blue), 20%);
+}
+
+button[disabled] {
+  background-color: var(--gray);
+}
+
+button[disabled]:hover {
+  background-color: var(--gray);
+}
+
 button .icon {
   margin-right: 0.5rem;
   filter: invert(100%) brightness(100%);
@@ -149,7 +165,7 @@ body {
 
 .menu nav {
   display: none;
-  margin-top: 52px;
+  margin-top: 60px;
   z-index: 2;
   width: 100vw;
   height: 100vh;
@@ -182,15 +198,15 @@ body {
   margin: 0;
 }
 
-.menu .menu-toggle img:last-child {
+.menu .menu-toggle .icon:last-child {
   display: none;
 }
 
-.menu.open .menu-toggle img:last-child {
+.menu.open .menu-toggle .icon:last-child {
   display: block;
 }
 
-.menu.open .menu-toggle img:first-child {
+.menu.open .menu-toggle .icon:first-child {
   display: none;
 }
 
@@ -213,7 +229,7 @@ body {
   position: relative;
   width: 375px;
   height: 653px;
-  background-image: url("/images/poker-table.png");
+  background-image: url("images/poker-table.png");
   background-repeat: no-repeat;
   background-position: center center;
   color: var(--white);
