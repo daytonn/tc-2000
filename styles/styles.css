@@ -61,24 +61,29 @@ a:active {
   z-index: 1;
 }
 
-.status-indicator.connected .icon {
-  fill: var(--blue);
+.status-indicator.interactive .icon {
+  fill: var(--teal);
 }
 
-.status-indicator.configuring .icon {
-  fill: #ff0080;
+.status-indicator.control .icon {
+  fill: var(--purple);
 }
 
 .status-indicator.running .icon {
   fill: var(--green);
 }
 
-.status-indicator.offline .icon {
-  fill: var(--red);
+.status-indicator.configuring .icon {
+  fill: #ff0080;
 }
 
-.status-indicator.interactive .icon {
-  fill: var(--white);
+.status-indicator.connected .icon {
+  fill: var(--blue);
+}
+
+.status-indicator.error .icon,
+.status-indicator.offline .icon {
+  fill: var(--red);
 }
 
 .status-indicator.random0 .icon {
@@ -140,6 +145,7 @@ button:hover {
 }
 
 button[disabled] {
+  cursor: not-allowed;
   background-color: var(--gray);
 }
 
@@ -229,7 +235,7 @@ body {
   position: relative;
   width: 375px;
   height: 653px;
-  background-image: url("images/poker-table.png");
+  background-image: url("/images/poker-table.png");
   background-repeat: no-repeat;
   background-position: center center;
   color: var(--white);
@@ -367,14 +373,22 @@ body {
   font-weight: 800;
 }
 
-.action-button:first-child {
+.action-button.save {
   top: 242px;
 }
 
-.action-button:nth-child(2) {
-  top: 342px;
+.action-button.cancel {
+  top: 305px;
 }
 
-.action-button:nth-child(4) {
-  top: 410px;
+.action-button.clear-all {
+  top: 368px;
+}
+
+.action-button.quit-interactive {
+  top: 242px;
+}
+
+.action-button.quit-control {
+  top: 338px;
 }

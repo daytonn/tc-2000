@@ -1,9 +1,15 @@
 (() => {
   window.addEventListener("load", () => {
+    const DEBUG_STATE = true;
     const $arcadeButtons = Array.from(
       document.querySelectorAll(".arcade-button"),
     );
     const $interactiveButton = document.querySelector("#interactive-button");
+    const $controlModeButton = document.querySelector("#control-button");
+    const $quitControlModeButton = document.querySelector(
+      ".action-button.quit-control",
+    );
+    const $nextButton = document.querySelector(".action-button.control-next");
     const $clearButton = document.querySelector(".action-button.clear-all");
     const $colorButton = document.querySelector("#color-config-button");
     const $menu = document.querySelector(".menu");
@@ -23,6 +29,7 @@
     );
     const $menuButtons = [
       $configureButton,
+      $controlModeButton,
       $interactiveButton,
       $resetButton,
       $randomPlayerButton,
@@ -55,6 +62,38 @@
       "interactive",
       "control",
     ];
+
+    function isOffline() {
+      return status === STATES.OFFLINE;
+    }
+
+    function isConnected() {
+      return status === STATES.CONNECTED;
+    }
+
+    function isConfiguring() {
+      return status === STATES.CONFIGURING;
+    }
+
+    function isRunning() {
+      return status === STATES.RUNNING;
+    }
+
+    function isRandomizing() {
+      return status === STATES.RANDOMIZING;
+    }
+
+    function isError() {
+      return status === STATES.ERROR;
+    }
+
+    function isInteracting() {
+      return status === STATES.INTERACTIVE;
+    }
+
+    function isControlling() {
+      return status === STATES.CONTROL;
+    }
 
     let currentPlayer = 0;
     let currentPlayerIndex = 0;
@@ -90,6 +129,12 @@
       console.error(error);
     });
 
+    $controlModeButton.addEventListener("click", handleControlModeClick);
+    $quitControlModeButton.addEventListener(
+      "click",
+      handleQuitControlModeClick,
+    );
+    $nextButton.addEventListener("click", handleNextButtonClick);
     $colorButton.addEventListener("click", handleColorToggle);
     $menuToggle.addEventListener("click", handleMenuToggle);
     $interactiveButton.addEventListener("click", handleInteractiveToggleClick);
@@ -107,16 +152,37 @@
       handleQuitInteractiveClick,
     );
 
+    function handleQuitControlModeClick() {
+      setState({ status: STATES.RUNNING });
+      sendUpdates();
+    }
+
+    function handleNextButtonClick() {
+      const nextIndex = currentPlayerIndex + 1;
+      const index = nextIndex >= playerCount ? 0 : currentPlayerIndex + 1;
+
+      setState({ currentPlayer: players[index], currentPlayerIndex: index });
+      renderState();
+      sendUpdates();
+    }
+
+    function handleControlModeClick() {
+      setState({ status: STATES.CONTROL });
+      renderState();
+      closeMenu();
+      sendUpdates();
+    }
+
     function handleQuitInteractiveClick() {
       console.log("handleQuitInteractiveClick");
       $quitInteractiveButton.classList.remove("visible");
       setState(undoState);
-      sendUpdatesOverWebSockets();
+      sendUpdates();
       renderState();
     }
 
     function handleInteractiveToggleClick() {
-      undoState = buildPayload();
+      undoState = getState();
       setState({
         status: STATES.INTERACTIVE,
         players: [],
@@ -124,22 +190,22 @@
         currentPlayerIndex: 0,
         playerCount: 0,
       });
-      sendUpdatesOverWebSockets();
+      sendUpdates();
       renderState();
       closeMenu();
     }
 
     function handleConfigureClick() {
-      undoState = buildPayload();
+      undoState = getState();
       setState({ status: STATES.CONFIGURING });
-      sendUpdatesOverWebSockets();
+      sendUpdates();
       renderState();
       closeMenu();
     }
 
     function handleCancelConfigClick() {
       setState(undoState);
-      sendUpdatesOverWebSockets();
+      sendUpdates();
       renderState();
     }
 
@@ -148,7 +214,7 @@
       clearArcadeButtons(false);
       renderState();
       closeMenu();
-      sendUpdatesOverWebSockets();
+      sendUpdates();
     }
 
     function handleSocketMessage({ data }) {
@@ -182,7 +248,7 @@
         configured: false,
       });
       renderState();
-      sendUpdatesOverWebSockets();
+      sendUpdates();
     }
 
     function handleResetConfig() {
@@ -195,7 +261,7 @@
         configured: false,
       });
       renderState();
-      sendUpdatesOverWebSockets();
+      sendUpdates();
       closeMenu();
     }
 
@@ -210,7 +276,7 @@
       });
       renderState();
       undoState = {};
-      sendUpdatesOverWebSockets();
+      sendUpdates();
     }
 
     function handleArcadeButtonClick(button) {
@@ -228,7 +294,13 @@
             configured,
           });
           renderState();
-          sendUpdatesOverWebSockets();
+          sendUpdates();
+        }
+
+        if (status === STATES.CONTROL) {
+          if (player === currentPlayer) {
+            handleNextButtonClick();
+          }
         }
 
         if (status === STATES.INTERACTIVE) {
@@ -244,8 +316,10 @@
             playerCount: players.length,
           });
           renderState();
-          sendUpdatesOverWebSockets();
+          sendUpdates();
         }
+
+        // TODO
       };
     }
 
@@ -260,8 +334,12 @@
     }
 
     function setState(state) {
+      const currentState = getState();
+      if (JSON.stringify(state) === JSON.stringify(currentState)) {
+        return;
+      }
       const newState = {
-        ...buildPayload(),
+        ...currentState,
         ...state,
       };
 
@@ -272,14 +350,43 @@
       players = newState.players;
       status = newState.status;
 
+      if (DEBUG_STATE) {
+        const statusName = STATUS[status];
+        console.table(
+          [
+            {
+              ...currentState,
+              0: "Current",
+              statusName,
+              players: currentState.players.join(", "),
+            },
+            {
+              ...state,
+              0: "New",
+              statusName,
+              players: newState.players.join(", "),
+            },
+          ],
+          [
+            "0",
+            "statusName",
+            "configured",
+            "currentPlayer",
+            "currentPlayerIndex",
+            "playerCount",
+            "players",
+          ],
+        );
+      }
+
       return newState;
     }
 
-    function sendUpdatesOverWebSockets() {
-      Socket.send(JSON.stringify(buildPayload()));
+    function sendUpdates() {
+      Socket.send(JSON.stringify(getState()));
     }
 
-    function buildPayload() {
+    function getState() {
       return {
         configured,
         currentPlayer,
@@ -298,67 +405,76 @@
     }
 
     function renderMenuState() {
-      switch (status) {
-        case STATES.CONFIGURING:
-          disableAllMenuOptions({ except: [$resetButton, $colorButton] });
-          break;
-        case STATES.INTERACTIVE:
-          disableAllMenuOptions({ except: [$resetButton, $colorButton] });
-          break;
-        case STATES.RANDOMIZING:
-          disableAllMenuOptions();
-          break;
-        default:
-          enableAllMenuOptions();
-          break;
+      if (isOffline()) {
+        menuOptions($resetButton);
+      }
+
+      if (isConnected()) {
+        menuOptions(
+          $resetButton,
+          $configureButton,
+          $colorButton,
+          $interactiveButton,
+        );
+      }
+
+      if (isConfiguring()) {
+        menuOptions($resetButton, $colorButton);
+      }
+
+      if (isRunning()) {
+        menuOptions(
+          $configureButton,
+          $controlModeButton,
+          $interactiveButton,
+          $resetButton,
+          $randomPlayerButton,
+          $colorButton,
+        );
+      }
+
+      if (isInteracting()) {
+        menuOptions($resetButton, $colorButton);
+      }
+
+      if (isRandomizing()) {
+        menuOptions();
+      }
+
+      if (isControlling()) {
+        menuOptions($resetButton);
+      }
+
+      if (!configured) {
+        menuOptions(
+          $configureButton,
+          $interactiveButton,
+          $resetButton,
+          $colorButton,
+        );
       }
     }
 
-    function disableAllMenuOptions({ except, only } = {}) {
-      const onlyFilter = Array.isArray(only)
-        ? only.map((x) => x.getAttribute("id"))
-        : only
-          ? [only.getAttribute("id")]
-          : [];
-      const exceptFilter = Array.isArray(except)
-        ? except.map((x) => x.getAttribute("id"))
-        : except
-          ? [except.getAttribute("id")]
-          : [];
-
-      $menuButtons.forEach((button) => {
-        const id = button.getAttribute("id");
-        if (exceptFilter.includes(id)) return;
-        if (onlyFilter.length === 0) {
-          button.setAttribute("disabled", "");
-        }
-        if (onlyFilter.length && onyFilter.includes(id)) {
-          button.setAttribute("disabled", "");
+    function menuOptions(...buttons) {
+      const buttonIds = buttons.map((x) => x.id);
+      $menuButtons.forEach((btn) => {
+        if (buttonIds.includes(btn.getAttribute("id"))) {
+          enableMenuOptions(btn);
+        } else {
+          disableMenuOptions(btn);
         }
       });
     }
 
-    function enableAllMenuOptions({ except, only } = {}) {
-      const onlyFilter = Array.isArray(only)
-        ? only.map((x) => x.getAttribute("id"))
-        : only
-          ? [only.getAttribute("id")]
-          : [];
-      const exceptFilter = Array.isArray(except)
-        ? except.map((x) => x.getAttribute("id"))
-        : except
-          ? [except.getAttribute("id")]
-          : [];
+    function disableMenuOptions(...buttons) {
+      buttons.forEach((btn) => {
+        btn.setAttribute("disabled", "");
+      });
+    }
 
-      $menuButtons.forEach((button) => {
-        const id = button.getAttribute("id");
-        if (exceptFilter.includes(id)) return;
-        if (onlyFilter.length && onyFilter.includes(id)) {
-          button.removeAttribute("disabled");
-        }
-        if (onlyFilter.length === 0) {
-          button.removeAttribute("disabled");
-        }
+    function enableMenuOptions(...buttons) {
+      buttons.forEach((btn) => {
+        btn.removeAttribute("disabled");
       });
     }
 
@@ -404,6 +520,8 @@
       $clearButton.classList.remove("visible");
       $saveButton.classList.remove("visible");
       $cancelButton.classList.remove("visible");
+      $nextButton.classList.remove("visible");
+      $quitControlModeButton.classList.remove("visible");
     }
 
     function showConfigButtons() {
@@ -416,11 +534,11 @@
       hideConfigButtons();
       clearArcadeButtons();
 
-      if (status === STATES.RANDOMIZING) {
+      if (isRandomizing()) {
         togglePlayerButton(currentPlayer);
       }
 
-      if (status === STATES.CONFIGURING) {
+      if (isConfiguring()) {
         showConfigButtons();
         players.forEach((player, i) => {
           renderPlayerNumber(player, i);
@@ -428,7 +546,7 @@
         });
       }
 
-      if (status === STATES.INTERACTIVE) {
+      if (isInteracting()) {
         $quitInteractiveButton.classList.add("visible");
 
         players.forEach((player, i) => {
@@ -436,8 +554,20 @@
         });
       }
 
-      if (status === STATES.CONNECTED || status === STATES.RUNNING) {
+      if (isConnected() || isRunning() || isControlling()) {
         switchPlayerButtonOn(currentPlayer);
+      }
+
+      if (isControlling()) {
+        $nextButton.classList.add("visible");
+        $arcadeButtons.forEach((btn) => {
+          if (btn.getAttribute("player") != currentPlayer) {
+            btn.setAttribute("disabled", "");
+          } else {
+            btn.removeAttribute("disabled");
+          }
+        });
+        $quitControlModeButton.classList.add("visible");
       }
     }
 
