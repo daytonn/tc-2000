@@ -560,13 +560,6 @@
 
       if (isControlling()) {
         $nextButton.classList.add("visible");
-        $arcadeButtons.forEach((btn) => {
-          if (btn.getAttribute("player") != currentPlayer) {
-            btn.setAttribute("disabled", "");
-          } else {
-            btn.removeAttribute("disabled");
-          }
-        });
         $quitControlModeButton.classList.add("visible");
       }
     }
