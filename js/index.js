@@ -129,6 +129,9 @@
       console.error(error);
     });
 
+    $statusIndicator.addEventListener("click", () => {
+      window.location = window.location;
+    });
     $controlModeButton.addEventListener("click", handleControlModeClick);
     $quitControlModeButton.addEventListener(
       "click",
